@@ -12,7 +12,7 @@ public class BandwidthBroker {
     /**
      * Stores the associations netmwork/SiteIndex
      */
-    Map<Integer, Integer> netmaskIndexer;
+    Map<Integer, Integer> networkIndexer;
 
     /**
      * Stores the couples SiteIndex/Site
@@ -27,7 +27,7 @@ public class BandwidthBroker {
     }
 
     private BandwidthBroker() {
-        netmaskIndexer = new HashMap<>();
+        networkIndexer = new HashMap<>();
         siteIndexer = new HashMap<>();
     }
 
@@ -49,18 +49,17 @@ public class BandwidthBroker {
     }
 
     public void addSite(Site site, Integer siteIndex){
-        netmaskIndexer.put(site.getNetwork(), siteIndex);
+        networkIndexer.put(site.getNetwork(), siteIndex);
         siteIndexer.put(siteIndex,site);
         System.out.println("Added site " + siteIndex + " with network " + utils.ipAddrConverter.ipIntegerToString(site.getNetwork()));
     }
 
 
-    private Integer getSiteNetmaskFromIP(Integer ip) {
-        //TODO Implement
+    private Integer getSiteNetworkFromIP(Integer ip) {
         return 0;
     }
 
     private Integer getSiteIndexFromIP(Integer IP) {
-        return netmaskIndexer.get(getSiteNetmaskFromIP(IP));
+        return networkIndexer.get(getSiteNetworkFromIP(IP));
     }
 }

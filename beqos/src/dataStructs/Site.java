@@ -44,6 +44,10 @@ public class Site {
         return network;
     }
 
+    public Integer getNetmask() {
+        return netmask;
+    }
+
     public void setNetmask(Integer netmask) {
         this.netmask = netmask;
     }
