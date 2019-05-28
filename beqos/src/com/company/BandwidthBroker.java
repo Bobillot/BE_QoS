@@ -55,11 +55,18 @@ public class BandwidthBroker {
     }
 
 
-    private Integer getSiteNetworkFromIP(Integer ip) {
-        return 0;
+    protected Integer getSiteNetworkFromIP(Integer ip) {
+        Integer result = 0;
+        Integer netmask;
+        for (Integer network: networkIndexer.keySet()){
+            netmask = network & ip;
+            if ( Integer.compareUnsigned(netmask,result) > 0)
+                result = netmask;
+        }
+        return result;
     }
 
-    private Integer getSiteIndexFromIP(Integer IP) {
+    protected Integer getSiteIndexFromIP(Integer IP) {
         return networkIndexer.get(getSiteNetworkFromIP(IP));
     }
 }
