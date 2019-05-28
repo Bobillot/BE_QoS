@@ -1,7 +1,10 @@
-package com.company;
+package application;
 
+import dataStructs.ReservationData;
 import dataStructs.Site;
 import static org.junit.jupiter.api.Assertions.*;
+
+import exceptions.EFCapacityReached;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static utils.ipAddrConverter.*;
@@ -45,5 +48,26 @@ class BandwidthBrokerTest {
         Integer indexTest = 1;
         assertEquals(indexTest,BB.getSiteIndexFromIP(ipTest));
 
+    }
+
+    @Test
+    void makeReservation() {
+        ReservationData resData = new ReservationData(5000,6000,ipStringToInteger("192.168.10.5"),
+                                                      ipStringToInteger("192.168.20.5"), 500);
+        BandwidthBroker BB = BandwidthBroker.getInstance();
+        try {
+            BB.makeReservation(resData);
+            assertEquals(500,BB.getSiteIndexer().get(1).getUsedEfCapacity());
+        } catch (EFCapacityReached efCapacityReached) {
+            fail("Should not have thrown");
+        }
+    }
+
+    @Test
+    void removeReservation() {
+    }
+
+    @Test
+    void addSite() {
     }
 }

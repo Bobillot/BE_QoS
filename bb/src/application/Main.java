@@ -1,11 +1,9 @@
-package com.company;
+package application;
 
 import dataStructs.ReservationData;
 import dataStructs.Site;
 import exceptions.EFCapacityReached;
-import utils.ipAddrConverter;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -58,6 +56,7 @@ public class Main {
                     //TODO send refuse
                 }
                 //TODO remove reservation if request for disconnect
+                BB.removeReservation(resData);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,19 +81,5 @@ public class Main {
             System.exit(1);
         }
         return resData;
-    }
-
-    /**
-     * Get reservation data from a request
-     * Need to define the class
-     *
-     * @param request
-     * @return
-     */
-    private static ReservationData getResDataFromRequest(Object request) {
-        /*TODO implement getting reservation data
-         * Needs information from sofpthone team
-         */
-        return null;
     }
 }
