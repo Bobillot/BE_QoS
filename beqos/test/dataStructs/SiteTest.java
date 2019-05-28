@@ -20,7 +20,7 @@ class SiteTest {
                         "eth0",
                         ipStringToInteger("202.205.205.1"),
                         "eth1",
-                        4000,3000, );
+                        4000,3000);
         resDataSrc = new ReservationData(5000,6000,
                                                          ipStringToInteger("192.168.10.5"),
                                                          ipStringToInteger("192.168.10.5"),
