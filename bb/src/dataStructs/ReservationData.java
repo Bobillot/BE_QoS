@@ -2,6 +2,7 @@ package dataStructs;
 
 import java.io.Serializable;
 import java.util.Objects;
+import static utils.ipAddrConverter.*;
 
 public class ReservationData implements Serializable {
     Integer srcPort, dstPort;
@@ -27,8 +28,15 @@ public class ReservationData implements Serializable {
         this.dataRateReq = dataRateReq;
     }
 
-    public ReservationData(ReservationData resDat) {
-        this(resDat.srcPort, resDat.dstPort, resDat.srcIP, resDat.dstIP, resDat.dataRateReq);
+    /**
+     * Constructs Reservation data from request from proxy SIP
+     * @param qoSRequest
+     */
+    public ReservationData(QoSRequest qoSRequest) {
+        this(qoSRequest.srcPort,qoSRequest.destPort,
+             ipStringToInteger(qoSRequest.srcIP.getHostAddress()),
+             ipStringToInteger(qoSRequest.destIP.getHostAddress()),
+             qoSRequest.rate);
     }
 
     /**

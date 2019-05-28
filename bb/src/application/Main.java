@@ -1,11 +1,14 @@
 package application;
 
+import dataStructs.QoSRequest;
+import dataStructs.QoSResponse;
 import dataStructs.ReservationData;
 import dataStructs.Site;
 import exceptions.EFCapacityReached;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -43,20 +46,35 @@ public class Main {
 
             // Accept client and create thread to handle com
             while (true) {
-                //TODO : make different class than reservation data to differentiate requests for res and unres
                 client = socket.accept();
                 ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-                ReservationData resData = readFromStream(ois);
+                QoSRequest qoSRequest = readFromStream(ois);
+                ReservationData resData = new ReservationData(qoSRequest);
 
-                //TODO test if request for connection or disconnection
-                try {
-                    BB.makeReservation(resData);
-                    //TODO send accept
-                } catch (EFCapacityReached efCapacityReached) {
-                    //TODO send refuse
+                //check if co or deco request
+                if (qoSRequest.statusConnexion) {
+                    ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
+                    QoSResponse resp;
+                    try {
+
+                        BB.makeReservation(resData);
+                        resp = new QoSResponse(true);
+
+
+                    } catch (EFCapacityReached efCapacityReached) {
+                        resp = new QoSResponse(false);
+                    }
+
+                    //write response and close stream
+                    oos.writeObject(resp);
+                    oos.flush();
+                    oos.close();
+
                 }
-                //TODO remove reservation if request for disconnect
-                BB.removeReservation(resData);
+                else {
+                    BB.removeReservation(resData);
+                }
+                client.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,14 +90,14 @@ public class Main {
      * @param ois
      * @return
      */
-    private static ReservationData readFromStream(ObjectInputStream ois) {
-        ReservationData resData = null;
+    private static QoSRequest readFromStream(ObjectInputStream ois) {
+        QoSRequest qoSRequest = null;
         try {
-            resData = (ReservationData) ois.readObject();
+            qoSRequest = (QoSRequest) ois.readObject();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        return resData;
+        return qoSRequest;
     }
 }
