@@ -19,7 +19,7 @@ public class Site {
     private String edgeRouterInterfaceOutside;
     private Integer netcatPort;
     private Integer totalEFCapacity; //modifiy with SLA class if more information
-    private  Integer usedEfCapacity;
+    private Integer usedEfCapacity;
 
     /**
      * Map storing a reservation and the queue index associated  with it
@@ -178,13 +178,13 @@ public class Site {
 
     private String generateConfigStringTc(Integer dataRateReq) {
         String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
-                   + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
+                + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
         return s;
     }
 
     private String generateConfigStringAssignTc() {
         String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
-                   + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter();
+                + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter();
         return s;
     }
 
@@ -203,6 +203,18 @@ public class Site {
     }
 
     private String removeConfigTc(ReservationData data)
+    {
+        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
+                + this.queueReservationList.get(data) + " htb rate " + data.dataRateReq + "kbit ceil " + data.dataRateReq + "kbit";
+        return s;
+    }
+
+    private String removeConfigAssignTc(ReservationData data)
+    {
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
+                + this.queueReservationList.get(data) + " fw flowid 1:1" + this.queueReservationList.get(data);
+        return s;
+    }
     private String removeConfigIpTables(Integer ipDest, Integer portDest)
     {
         String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
