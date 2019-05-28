@@ -91,9 +91,40 @@ public class Site {
         this.queueReservationList = queueReservationList;
     }
 
-    private String generateConfigStringTc(){}
+    public String getEdgeRouterInterfaceInside() {
+        return edgeRouterInterfaceInside;
+    }
 
-    private String generateConfigStringIpTables(Integer ipDest, Integer portDest){}
+    public void setEdgeRouterInterfaceInside(String edgeRouterInterfaceInside) {
+        this.edgeRouterInterfaceInside = edgeRouterInterfaceInside;
+    }
 
-    private String generateConfigStringDscp(Integer ipDest, Integer portDest){}
+    public Integer getEdgeRouterIPoutisde() {
+        return edgeRouterIPoutisde;
+    }
+
+    public void setEdgeRouterIPoutisde(Integer edgeRouterIPoutisde) {
+        this.edgeRouterIPoutisde = edgeRouterIPoutisde;
+    }
+
+    public String getEdgeRouterInterfaceOutside() {
+        return edgeRouterInterfaceOutside;
+    }
+
+    public void setEdgeRouterInterfaceOutside(String edgeRouterInterfaceOutside) {
+        this.edgeRouterInterfaceOutside = edgeRouterInterfaceOutside;
+    }
+
+    private String generateConfigStringTc()
+    { //TODO : convertir en ligne de commande Netcat
+        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid ")
+    }
+    private String generateConfigStringIpTables(Integer ipDest, Integer portDest)
+    {//TODO : convertir en ligne de commande Netcat
+
+    }
+    private String generateConfigStringDscp(Integer ipDest, Integer portDest)
+    {//TODO : convertir en ligne de commande Netcat
+
+    }
 }
