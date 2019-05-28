@@ -46,6 +46,7 @@ public class BandwidthBroker {
     /**
      * Makes a reservation for  traffic
      * Configures router
+     *
      * @param resData
      * @throws EFCapacityReached
      */
@@ -65,49 +66,52 @@ public class BandwidthBroker {
         for (Integer i : siteIndex) {
             stringList = siteIndexer.get(i).makeReservation(resData);
             //configure router
-            for (String s:stringList) {
-                configureRouter(s,i);
+            for (String s : stringList) {
+                configureRouter(s, i);
             }
         }
     }
 
     /**
      * Remove reservation
-     * reset router
+     * reset router settings as needed
+     *
      * @param resData
      */
-    public void removeReservation(ReservationData resData){
+    public void removeReservation(ReservationData resData) {
         Integer[] siteIndex = new Integer[2];
         siteIndex[0] = getSiteIndexFromIP(resData.getSrcIP());
         siteIndex[1] = getSiteIndexFromIP(resData.getDstIP());
 
-        for (Integer i : siteIndex){
+        for (Integer i : siteIndex) {
             siteIndexer.get(i).removeReservation(resData);
             //reset router commands
         }
     }
 
-    public void addSite(Site site, Integer siteIndex){
+    public void addSite(Site site, Integer siteIndex) {
         networkIndexer.put(site.getNetwork(), siteIndex);
-        siteIndexer.put(siteIndex,site);
+        siteIndexer.put(siteIndex, site);
         Socket socket = null;
         try {
-            socket = new Socket(InetAddress.getByName(ipIntegerToString(site.getEdgeRouterIPoutisde())), site.getNetcatPort());
+            socket = new Socket(InetAddress.getByName(ipIntegerToString(site.getEdgeRouterIPoutisde())),
+                                site.getNetcatPort());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        socketIndexer.put(siteIndex,socket);
+        socketIndexer.put(siteIndex, socket);
         initialRouterConfiguration(site);
-        System.out.println("Added site " + siteIndex + " with network " + utils.ipAddrConverter.ipIntegerToString(site.getNetwork()));
+        System.out.println("Added site " + siteIndex + " with network " + utils.ipAddrConverter.ipIntegerToString(
+                site.getNetwork()));
     }
 
 
     protected Integer getSiteNetworkFromIP(Integer ip) {
         Integer result = 0;
         Integer netmask;
-        for (Integer network: networkIndexer.keySet()){
+        for (Integer network : networkIndexer.keySet()) {
             netmask = network & ip;
-            if ( Integer.compareUnsigned(netmask,result) > 0)
+            if (Integer.compareUnsigned(netmask, result) > 0)
                 result = netmask;
         }
         return result;
@@ -117,7 +121,7 @@ public class BandwidthBroker {
         return networkIndexer.get(getSiteNetworkFromIP(IP));
     }
 
-    protected void configureRouter(String command, Integer siteIndex){
+    protected void configureRouter(String command, Integer siteIndex) {
         Socket socket = socketIndexer.get(siteIndex);
         try {
             OutputStream os = socket.getOutputStream();
@@ -135,14 +139,26 @@ public class BandwidthBroker {
         List<String> stringList = new ArrayList<>();
 
         //generate commands
-        stringList.add("tc qdisc del dev " + mySite.getEdgeRouterInterfaceOutside() + " root");                                                 //repart de 0
-        stringList.add("tc qdisc add dev " + mySite.getEdgeRouterInterfaceOutside() + " root handle 1: htb default 2");                         //création de la racine, les paquets non étiquetés iront dans 1:2
-        stringList.add("tc class add dev " + mySite.getEdgeRouterInterfaceOutside() + " parent 1: classid 1:1 htb rate " + mySite.getTotalEFCapacity() + "Mbit ceil "+ mySite.getTotalEFCapacity() + "Mbit");      //création à la racine d'une branche 1:1 à totalEF Mbit
-        stringList.add("tc class add dev " + mySite.getEdgeRouterInterfaceOutside() + " parent 1: classid 1:2 htb rate 10Mbit ceil 10Mbit");    //création à la racine d'une branche 1:2 à 10Mbit
+        //repart de 0
+        stringList.add(
+                "tc qdisc del dev " + mySite.getEdgeRouterInterfaceOutside() + " root");
 
-        //send commands
-        for (String s:stringList) {
-            configureRouter(s,siteIndex);
+        //création de la racine, les paquets non étiquetés iront dans 1:2
+        stringList.add(
+                "tc qdisc add dev " + mySite.getEdgeRouterInterfaceOutside()
+                + " root handle 1: htb default 2");
+        //création à la racine d'une branche 1:1 à totalEF Mbit
+        stringList.add(
+                "tc class add dev " + mySite.getEdgeRouterInterfaceOutside()
+                + " parent 1: classid 1:1 htb rate "
+                + mySite.getTotalEFCapacity() + "Mbit ceil " + mySite.getTotalEFCapacity() + "Mbit");
+        //création à la racine d'une branche 1:2 à 10Mbit
+        stringList.add("tc class add dev " + mySite.getEdgeRouterInterfaceOutside()
+                       + " parent 1: classid 1:2 htb rate 10Mbit ceil 10Mbit");
+
+        //send commands to router
+        for (String s : stringList) {
+            configureRouter(s, siteIndex);
         }
     }
 }

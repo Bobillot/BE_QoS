@@ -52,6 +52,7 @@ public class Main {
 
     /**
      * Reads reservation data from a serialized ReservationData
+     *
      * @param ois
      * @return
      */
@@ -64,5 +65,16 @@ public class Main {
             System.exit(1);
         }
         return resData;
+    }
+
+    /**
+     * Get reservation data from a request
+     * Need to define the class
+     * @param request
+     * @return
+     */
+    private static ReservationData getResDataFromRequest(Object request) {
+        //TODO implement
+        return null;
     }
 }
