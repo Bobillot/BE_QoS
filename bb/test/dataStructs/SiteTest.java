@@ -30,8 +30,12 @@ class SiteTest {
     @Test
     void makeReservation() {
 
+        Integer usedBeg = site.getUsedEfCapacity();
+        Integer queueSizeBeg = site.getQueueReservationList().size();
         List<String> lstStr = site.makeReservation(resDataSrc);
-        assertEquals(4, lstStr.size());
+        assertEquals(usedBeg+64,site.getUsedEfCapacity());
+        assertTrue(site.getUsedEfCapacity()>=0);
+        assertEquals(queueSizeBeg+1,site.getQueueReservationList().size());
     }
 
     @Test
@@ -41,6 +45,7 @@ class SiteTest {
         Integer queueSizeBeg = site.getQueueReservationList().size();
         List<String> lstStr = site.removeReservation(resDataSrc);
         assertEquals(usedBeg-64,site.getUsedEfCapacity());
+        assertTrue(site.getUsedEfCapacity()>=0);
         assertEquals(queueSizeBeg-1,site.getQueueReservationList().size());
     }
 }
