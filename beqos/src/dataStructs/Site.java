@@ -215,7 +215,7 @@ public class Site {
 
     private String removeConfigAssignTc(ReservationData data)
     {
-        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
+        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
                 + this.queueReservationList.get(data) + " fw flowid 1:1" + this.queueReservationList.get(data);
         return s;
     }
