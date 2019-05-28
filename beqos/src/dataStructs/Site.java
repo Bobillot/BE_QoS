@@ -135,6 +135,37 @@ public class Site {
         this.netcatPort = netcatPort;
     }
 
+    public String getEdgeRouterInterfaceInside() {
+        return edgeRouterInterfaceInside;
+    }
+
+    public void setEdgeRouterInterfaceInside(String edgeRouterInterfaceInside) {
+        this.edgeRouterInterfaceInside = edgeRouterInterfaceInside;
+    }
+
+    public Integer getEdgeRouterIPoutisde() {
+        return edgeRouterIPoutisde;
+    }
+
+    public void setEdgeRouterIPoutisde(Integer edgeRouterIPoutisde) {
+        this.edgeRouterIPoutisde = edgeRouterIPoutisde;
+    }
+
+    public String getEdgeRouterInterfaceOutside() {
+        return edgeRouterInterfaceOutside;
+    }
+
+    public void setEdgeRouterInterfaceOutside(String edgeRouterInterfaceOutside) {
+        this.edgeRouterInterfaceOutside = edgeRouterInterfaceOutside;
+    }
+
+    public Integer getTcqueueIndexCounter() {
+        return tcqueueIndexCounter;
+    }
+
+    public void setTcqueueIndexCounter(Integer tcqueueIndexCounter) {
+        this.tcqueueIndexCounter = tcqueueIndexCounter;
+    }
 
     private String generateConfigStringTc(Integer dataRateReq) { //TODO : convertir en ligne de commande Netcat
         println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1" + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit");
