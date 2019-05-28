@@ -81,7 +81,6 @@ public class Site {
         return result;
     }
 
-
     public List<String> removeReservation(ReservationData resData) {
         ArrayList<String> result = new ArrayList<>();
 
@@ -97,6 +96,7 @@ public class Site {
         //TODO generate queue and iptables commands
 
         return result;
+
     }
 
     public Integer getNetwork() {
