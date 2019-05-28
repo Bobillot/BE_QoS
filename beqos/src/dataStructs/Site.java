@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static utils.ipAddrConverter.ipIntegerToString;
 import static utils.networkUtils.*;
 
 public class Site {
@@ -23,7 +24,7 @@ public class Site {
     /**
      * Map storing a reservation and the queue index associated  with it
      */
-    Map<ReservationData,Integer> queueReservationList;
+    Map<ReservationData, Integer> queueReservationList;
     Integer tcqueueIndexCounter;
 
     public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity, Integer netcatPort) {
@@ -36,7 +37,7 @@ public class Site {
         tcqueueIndexCounter = 0;
     }
 
-    public boolean isReservationPossible(Integer reqCapacity){
+    public boolean isReservationPossible(Integer reqCapacity) {
         Integer remainingCapacity = totalEFCapacity - usedEfCapacity;
         return remainingCapacity >= reqCapacity;
     }
@@ -44,10 +45,11 @@ public class Site {
     /**
      * Returns list of string for the BB to configure the router.
      * Makes the necessary changes to the Site instance state.
+     *
      * @param resData
      * @return
      */
-    public List<String> makeReservation(ReservationData resData){
+    public List<String> makeReservation(ReservationData resData) {
 
         ArrayList<String> result = new ArrayList<>();
 
@@ -67,8 +69,8 @@ public class Site {
 
         //generate strings
         result.add(generateConfigStringTc());
-        result.add(generateConfigStringIpTables(ipConfig,portConfig));
-        result.add(generateConfigStringDscp(ipConfig,portConfig));
+        result.add(generateConfigStringIpTables(ipConfig, portConfig));
+        result.add(generateConfigStringDscp(ipConfig, portConfig));
 
 
         System.out.println("made reservation for site " + getNetwork());
@@ -76,7 +78,7 @@ public class Site {
         return result;
     }
 
-    public void removeReservation(ReservationData resData){
+    public void removeReservation(ReservationData resData) {
         //TODO implement
     }
 
@@ -117,11 +119,11 @@ public class Site {
         this.usedEfCapacity = usedEfCapacity;
     }
 
-    public Map<ReservationData,Integer> getQueueReservationList() {
+    public Map<ReservationData, Integer> getQueueReservationList() {
         return queueReservationList;
     }
 
-    public void setQueueReservationList(Map<ReservationData,Integer> queueReservationList) {
+    public void setQueueReservationList(Map<ReservationData, Integer> queueReservationList) {
         this.queueReservationList = queueReservationList;
     }
 
@@ -133,9 +135,25 @@ public class Site {
         this.netcatPort = netcatPort;
     }
 
-    private String generateConfigStringTc(){}
 
-    private String generateConfigStringIpTables(Integer ipDest, Integer portDest){}
+    private String generateConfigStringTc(Integer dataRateReq) { //TODO : convertir en ligne de commande Netcat
+        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1" + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit");
+    }
 
-    private String generateConfigStringDscp(Integer ipDest, Integer portDest){}
+    private String generateConfigStringAssignTc() {//TODO : convertir en ligne de commande Netcat
+        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle " + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter());
+    }
+
+    private String generateConfigStringIpTables(Integer ipDest,
+                                                Integer portDest) {//TODO : convertir en ligne de commande Netcat
+        println("iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter());
+    }
+
+    private String generateConfigStringDscp(Integer ipDest,
+                                            Integer portDest) {//TODO : convertir en ligne de commande Netcat
+        println("iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF");
+
+    }
 }
