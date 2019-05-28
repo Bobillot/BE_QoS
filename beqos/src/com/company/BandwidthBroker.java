@@ -157,10 +157,10 @@ public class BandwidthBroker {
         stringList.add(
                 "tc qdisc del dev " + mySite.getEdgeRouterInterfaceOutside() + " root");
 
-        //création de la racine, les paquets non étiquetés iront dans 1:2
+        //création de la racine, les paquets seront par défaut étiquetés avec 20
         stringList.add(
                 "tc qdisc add dev " + mySite.getEdgeRouterInterfaceOutside()
-                + " root handle 1: htb default 2");
+                + " root handle 1: htb default 20");
         //création à la racine d'une branche 1:1 à totalEF Mbit
         stringList.add(
                 "tc class add dev " + mySite.getEdgeRouterInterfaceOutside()
@@ -169,6 +169,13 @@ public class BandwidthBroker {
         //création à la racine d'une branche 1:2 à 10Mbit
         stringList.add("tc class add dev " + mySite.getEdgeRouterInterfaceOutside()
                        + " parent 1: classid 1:2 htb rate 10Mbit ceil 10Mbit");
+        //les paquets étiquetés 20 iront dans la file 1:2 (BE)
+        stringList.add("tc filter add dev " + mySite.getEdgeRouterInterfaceOutside()
+                + " parent 1: protocol ip prio 1 handle 20 fw flowid 1:2");
+
+        stringList.add("iptables -A POSTROUTING -t mangle -p udp -j MARK --set-mark 20");
+
+        stringList.add("iptables -A POSTROUTING -t mangle -p udp j DSCP --set-dscp-class BE");
 
         //send commands to router
         for (String s : stringList) {
