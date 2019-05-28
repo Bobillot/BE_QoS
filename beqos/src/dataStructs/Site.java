@@ -39,6 +39,10 @@ public class Site {
         System.out.println("made reservation for site " + getNetwork());
     }
 
+    public void removeReservation(ReservationData resData){
+        //TODO implement
+    }
+
     public Integer getNetwork() {
         Integer network = edgeRouterIPinside & netmask;
         return network;

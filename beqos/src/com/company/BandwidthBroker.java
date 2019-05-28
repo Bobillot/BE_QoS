@@ -31,20 +31,30 @@ public class BandwidthBroker {
         siteIndexer = new HashMap<>();
     }
 
-    public void makeReservation(ReservationData InitiatorResData) throws EFCapacityReached {
+    public void makeReservation(ReservationData resData) throws EFCapacityReached {
         //src,dst
         Integer[] siteIndex = new Integer[2];
-        siteIndex[0] = getSiteIndexFromIP(InitiatorResData.getSrcIP());
-        siteIndex[1] = getSiteIndexFromIP(InitiatorResData.getDstIP());
+        siteIndex[0] = getSiteIndexFromIP(resData.getSrcIP());
+        siteIndex[1] = getSiteIndexFromIP(resData.getDstIP());
 
         for (Integer i : siteIndex) {
-            if (!siteIndexer.get(i).isReservationPossible(InitiatorResData.getDataRateReq()))
+            if (!siteIndexer.get(i).isReservationPossible(resData.getDataRateReq()))
                 throw new EFCapacityReached();
         }
 
         //we know both sites have capacity
         for (Integer i : siteIndex) {
-            siteIndexer.get(i).makeReservation(InitiatorResData);
+            siteIndexer.get(i).makeReservation(resData);
+        }
+    }
+
+    public void removeReservation(ReservationData resData){
+        Integer[] siteIndex = new Integer[2];
+        siteIndex[0] = getSiteIndexFromIP(resData.getSrcIP());
+        siteIndex[1] = getSiteIndexFromIP(resData.getDstIP());
+
+        for (Integer i : siteIndex){
+            siteIndexer.get(i).removeReservation(resData);
         }
     }
 
