@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import static utils.networkUtils.*;
+import static utils.ipAddrConverter.*;
 
 public class Site {
     //site number as collection index
@@ -127,16 +128,32 @@ public class Site {
         this.edgeRouterInterfaceOutside = edgeRouterInterfaceOutside;
     }
 
-    private String generateConfigStringTc()
-    { //TODO : convertir en ligne de commande Netcat
-        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid ")
+    public Integer getTcqueueIndexCounter() {
+        return tcqueueIndexCounter;
     }
-    private String generateConfigStringIpTables(Integer ipDest, Integer portDest)
-    {//TODO : convertir en ligne de commande Netcat
 
+    public void setTcqueueIndexCounter(Integer tcqueueIndexCounter) {
+        this.tcqueueIndexCounter = tcqueueIndexCounter;
+    }
+
+    public void setQueueReservationList(Map<ReservationData, Integer> queueReservationList) {
+        this.queueReservationList = queueReservationList;
+    }
+
+    private String generateConfigStringTc(Integer dataRateReq)
+    { //TODO : convertir en ligne de commande Netcat
+        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1" + this.getTcqueueIndexCounter() + " htb rate " +dataRateReq +"kbit ceil "+dataRateReq +"kbit");
+    }
+    private String generateConfigStringAssignTc()
+    {//TODO : convertir en ligne de commande Netcat
+        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "+this.getTcqueueIndexCounter()+" fw flowid 1:1"+this.getTcqueueIndexCounter());
+    }
+        private String generateConfigStringIpTables(Integer ipDest, Integer portDest)
+    {//TODO : convertir en ligne de commande Netcat
+        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +" --dport "+portDest+" -j MARK --set-mark " +this.getTcqueueIndexCounter());
     }
     private String generateConfigStringDscp(Integer ipDest, Integer portDest)
     {//TODO : convertir en ligne de commande Netcat
-
+        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +" --dport "+portDest+" -j DSCP --set-dscp-class EF");
     }
 }
