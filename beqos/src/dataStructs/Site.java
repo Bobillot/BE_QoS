@@ -68,7 +68,8 @@ public class Site {
         tcqueueIndexCounter++;
 
         //generate strings
-        result.add(generateConfigStringTc());
+        result.add(generateConfigStringTc(resData.getDataRateReq()));
+        result.add(generateConfigStringAssignTc());
         result.add(generateConfigStringIpTables(ipConfig, portConfig));
         result.add(generateConfigStringDscp(ipConfig, portConfig));
 
@@ -168,23 +169,29 @@ public class Site {
     }
 
     private String generateConfigStringTc(Integer dataRateReq) { //TODO : convertir en ligne de commande Netcat
-        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1" + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit");
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
+                   + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
+        return s;
     }
 
     private String generateConfigStringAssignTc() {//TODO : convertir en ligne de commande Netcat
-        println("tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle " + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter());
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
+                   + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter();
+        return s;
     }
 
     private String generateConfigStringIpTables(Integer ipDest,
                                                 Integer portDest) {//TODO : convertir en ligne de commande Netcat
-        println("iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter());
+        String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
+        return s;
     }
 
     private String generateConfigStringDscp(Integer ipDest,
                                             Integer portDest) {//TODO : convertir en ligne de commande Netcat
-        println("iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF");
+        String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
+        return s;
 
     }
 }

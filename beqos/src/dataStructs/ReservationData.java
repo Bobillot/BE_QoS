@@ -1,8 +1,9 @@
 package dataStructs;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ReservationData {
+public class ReservationData implements Serializable {
     Integer srcPort, dstPort;
     Integer srcIP, dstIP;
     Integer dataRateReq;
