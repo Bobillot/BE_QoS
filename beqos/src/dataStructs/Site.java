@@ -150,10 +150,10 @@ public class Site {
     }
         private String generateConfigStringIpTables(Integer ipDest, Integer portDest)
     {//TODO : convertir en ligne de commande Netcat
-        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +" --dport "+portDest+" -j MARK --set-mark " +this.getTcqueueIndexCounter());
+        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +"-p udp --dport "+portDest+" -j MARK --set-mark " +this.getTcqueueIndexCounter());
     }
     private String generateConfigStringDscp(Integer ipDest, Integer portDest)
     {//TODO : convertir en ligne de commande Netcat
-        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +" --dport "+portDest+" -j DSCP --set-dscp-class EF");
+        println("iptables -A POSTROUTING -t mangle -d "+ ipIntegerToString(ipDest) +"-p udp --dport "+portDest+" -j DSCP --set-dscp-class EF");
     }
 }
