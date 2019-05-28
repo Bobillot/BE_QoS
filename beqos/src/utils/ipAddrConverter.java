@@ -1,10 +1,5 @@
 package utils;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteOrder;
-
 public class ipAddrConverter {
     public static Integer ipStringToInteger(String ipStr){
         // Parse IP parts into an int array

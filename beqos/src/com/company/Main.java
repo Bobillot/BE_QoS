@@ -26,6 +26,7 @@ public class Main {
 
         //wait for requests from the phones and make reservation accordingly
         try {
+            //FIXME Modify with datagram socket ? Need info from softphone team
             ServerSocket socket = new ServerSocket(4000);
             Socket client = null;
 
@@ -35,12 +36,15 @@ public class Main {
                 client = socket.accept();
                 ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
                 ReservationData resData = readFromStream(ois);
+
+                //TODO test if request for connection or disconnection
                 try {
                     BB.makeReservation(resData);
                     //TODO send accept
                 } catch (EFCapacityReached efCapacityReached) {
                     //TODO send refuse
                 }
+                //TODO remove reservation if request for disconnect
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,7 +78,9 @@ public class Main {
      * @return
      */
     private static ReservationData getResDataFromRequest(Object request) {
-        //TODO implement
+        /*TODO implement getting reservation data
+         * Needs information from sofpthone team
+        */
         return null;
     }
 }

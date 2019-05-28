@@ -12,20 +12,20 @@ import static utils.networkUtils.*;
 
 public class Site {
     //site number as collection index
-    Integer netmask;
-    Integer edgeRouterIPinside;
-    String edgeRouterInterfaceInside;
-    Integer edgeRouterIPoutisde;
-    String edgeRouterInterfaceOutside;
-    Integer netcatPort;
-    Integer totalEFCapacity; //modifiy with SLA class if more information
-    Integer usedEfCapacity;
+    private Integer netmask;
+    private Integer edgeRouterIPinside;
+    private String edgeRouterInterfaceInside;
+    private Integer edgeRouterIPoutisde;
+    private String edgeRouterInterfaceOutside;
+    private Integer netcatPort;
+    private Integer totalEFCapacity; //modifiy with SLA class if more information
+    private  Integer usedEfCapacity;
 
     /**
      * Map storing a reservation and the queue index associated  with it
      */
-    Map<ReservationData, Integer> queueReservationList;
-    Integer tcqueueIndexCounter;
+    //private Map<ReservationData, Integer> queueReservationList;
+    private Integer tcqueueIndexCounter;
 
     public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity, Integer netcatPort) {
         this.netmask = netmask;
@@ -33,7 +33,7 @@ public class Site {
         this.totalEFCapacity = totalEFCapacity;
         this.usedEfCapacity = 0;
         this.netcatPort = netcatPort;
-        queueReservationList = new HashMap<>();
+        //queueReservationList = new HashMap<>();
         tcqueueIndexCounter = 0;
     }
 
@@ -53,13 +53,12 @@ public class Site {
 
         ArrayList<String> result = new ArrayList<>();
 
-        //TODO add capacity check
+        //TODO maybe add capacity check?
 
         usedEfCapacity += resData.getDataRateReq();
         Boolean init = resData.getSrcIP().equals(
                 findIpInNetwork(resData.getSrcIP(), resData.getDstIP(), this.getNetwork()));
 
-        //TODO implement
         //get values for generating config strings
         Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
         Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
@@ -79,8 +78,21 @@ public class Site {
         return result;
     }
 
-    public void removeReservation(ReservationData resData) {
-        //TODO implement
+    public List<String> removeReservation(ReservationData resData) {
+        ArrayList<String> result = new ArrayList<>();
+
+        usedEfCapacity -= resData.getDataRateReq();
+
+        Boolean init = resData.getSrcIP().equals(
+                findIpInNetwork(resData.getSrcIP(), resData.getDstIP(), this.getNetwork()));
+
+        //get values for generating config strings
+        Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
+        Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
+
+        //TODO generate queue and iptables commands
+
+        return result;
     }
 
     public Integer getNetwork() {
@@ -118,14 +130,6 @@ public class Site {
 
     public void setUsedEfCapacity(Integer usedEfCapacity) {
         this.usedEfCapacity = usedEfCapacity;
-    }
-
-    public Map<ReservationData, Integer> getQueueReservationList() {
-        return queueReservationList;
-    }
-
-    public void setQueueReservationList(Map<ReservationData, Integer> queueReservationList) {
-        this.queueReservationList = queueReservationList;
     }
 
     public Integer getNetcatPort() {
@@ -168,27 +172,27 @@ public class Site {
         this.tcqueueIndexCounter = tcqueueIndexCounter;
     }
 
-    private String generateConfigStringTc(Integer dataRateReq) { //TODO : convertir en ligne de commande Netcat
+    private String generateConfigStringTc(Integer dataRateReq) {
         String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
                    + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
         return s;
     }
 
-    private String generateConfigStringAssignTc() {//TODO : convertir en ligne de commande Netcat
+    private String generateConfigStringAssignTc() {
         String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
                    + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter();
         return s;
     }
 
     private String generateConfigStringIpTables(Integer ipDest,
-                                                Integer portDest) {//TODO : convertir en ligne de commande Netcat
+                                                Integer portDest) {
         String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
         return s;
     }
 
     private String generateConfigStringDscp(Integer ipDest,
-                                            Integer portDest) {//TODO : convertir en ligne de commande Netcat
+                                            Integer portDest) {
         String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
