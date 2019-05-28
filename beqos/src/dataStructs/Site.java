@@ -36,12 +36,11 @@ public class Site {
         //TODO implement check if initiator or dest
 
         //TODO implement
-        System.out.println("made reservation for site " + netmask);
+        System.out.println("made reservation for site " + getNetwork());
     }
 
     public Integer getNetwork() {
         Integer network = edgeRouterIPinside & netmask;
-        System.out.println(utils.ipAddrConverter.ipIntegerToString(network));
         return network;
     }
 

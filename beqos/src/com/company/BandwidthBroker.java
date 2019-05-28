@@ -34,8 +34,8 @@ public class BandwidthBroker {
     public void makeReservation(ReservationData InitiatorResData) throws EFCapacityReached {
         //src,dst
         Integer[] siteIndex = new Integer[2];
-        siteIndex[0] = getSiteIndewFromIP(InitiatorResData.getSrcIP());
-        siteIndex[1] = getSiteIndewFromIP(InitiatorResData.getDstIP());
+        siteIndex[0] = getSiteIndexFromIP(InitiatorResData.getSrcIP());
+        siteIndex[1] = getSiteIndexFromIP(InitiatorResData.getDstIP());
 
         for (Integer i : siteIndex) {
             if (!siteIndexer.get(i).isReservationPossible(InitiatorResData.getDataRateReq()))
@@ -51,6 +51,7 @@ public class BandwidthBroker {
     public void addSite(Site site, Integer siteIndex){
         netmaskIndexer.put(site.getNetwork(), siteIndex);
         siteIndexer.put(siteIndex,site);
+        System.out.println("Added site " + siteIndex + " with network " + utils.ipAddrConverter.ipIntegerToString(site.getNetwork()));
     }
 
 
@@ -59,7 +60,7 @@ public class BandwidthBroker {
         return 0;
     }
 
-    private Integer getSiteIndewFromIP(Integer IP) {
+    private Integer getSiteIndexFromIP(Integer IP) {
         return netmaskIndexer.get(getSiteNetmaskFromIP(IP));
     }
 }
