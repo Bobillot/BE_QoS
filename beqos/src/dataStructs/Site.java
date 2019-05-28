@@ -23,7 +23,7 @@ public class Site {
 
 
     /**
-     * Map storing a reservation and the queue index associated  with it
+     * Map storing a reservation data and the queue index associated  with it
      */
     private Map<ReservationData, Integer> queueReservationList;
     private Integer tcqueueIndexCounter;
@@ -80,7 +80,7 @@ public class Site {
         result.add(generateConfigStringDscp(ipConfig, portConfig));
 
 
-        System.out.println("made reservation for site " + getNetwork());
+        System.out.println("made reservation for site " + ipIntegerToString(getNetwork()));
 
         return result;
     }
@@ -97,7 +97,14 @@ public class Site {
         Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
         Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
 
-        //TODO generate queue and iptables commands
+        //remove from list
+        queueReservationList.remove(resData);
+
+        //generate commands
+        result.add(removeConfigAssignTc(resData));
+        result.add(removeConfigTc(resData));
+        result.add(removeConfigIpTables(ipConfig,portConfig));
+        result.add(removeConfigDscp(ipConfig,portConfig));
 
         return result;
 
@@ -180,6 +187,10 @@ public class Site {
         this.tcqueueIndexCounter = tcqueueIndexCounter;
     }
 
+    public Map<ReservationData, Integer> getQueueReservationList() {
+        return queueReservationList;
+    }
+
     private String generateConfigStringTc(Integer dataRateReq) {
         String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:1 classid 1:1"
                    + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
@@ -208,14 +219,14 @@ public class Site {
 
     private String removeConfigTc(ReservationData data)
     {
-        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
+        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:1 classid 1:1"
                 + this.queueReservationList.get(data) + " htb rate " + data.dataRateReq + "kbit ceil " + data.dataRateReq + "kbit";
         return s;
     }
 
     private String removeConfigAssignTc(ReservationData data)
     {
-        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:0 protocol ip prio 1 handle "
                 + this.queueReservationList.get(data) + " fw flowid 1:1" + this.queueReservationList.get(data);
         return s;
     }
