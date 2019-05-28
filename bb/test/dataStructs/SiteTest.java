@@ -36,5 +36,11 @@ class SiteTest {
 
     @Test
     void removeReservation() {
+        site.makeReservation(resDataSrc);
+        Integer usedBeg = site.getUsedEfCapacity();
+        Integer queueSizeBeg = site.getQueueReservationList().size();
+        List<String> lstStr = site.removeReservation(resDataSrc);
+        assertEquals(usedBeg-64,site.getUsedEfCapacity());
+        assertEquals(queueSizeBeg-1,site.getQueueReservationList().size());
     }
 }

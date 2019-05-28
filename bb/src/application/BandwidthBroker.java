@@ -1,4 +1,4 @@
-package com.company;
+package application;
 
 import dataStructs.ReservationData;
 import dataStructs.Site;
@@ -83,9 +83,13 @@ public class BandwidthBroker {
         siteIndex[0] = getSiteIndexFromIP(resData.getSrcIP());
         siteIndex[1] = getSiteIndexFromIP(resData.getDstIP());
 
+        List<String> stringList;
         for (Integer i : siteIndex) {
-            siteIndexer.get(i).removeReservation(resData);
+            stringList = siteIndexer.get(i).removeReservation(resData);
             //reset router commands
+            for(String s : stringList){
+                configureRouter(s,i);
+            }
         }
     }
 
@@ -181,5 +185,29 @@ public class BandwidthBroker {
         for (String s : stringList) {
             configureRouter(s, siteIndex);
         }
+    }
+
+    public Map<Integer, Integer> getNetworkIndexer() {
+        return networkIndexer;
+    }
+
+    public void setNetworkIndexer(Map<Integer, Integer> networkIndexer) {
+        this.networkIndexer = networkIndexer;
+    }
+
+    public Map<Integer, Site> getSiteIndexer() {
+        return siteIndexer;
+    }
+
+    public void setSiteIndexer(Map<Integer, Site> siteIndexer) {
+        this.siteIndexer = siteIndexer;
+    }
+
+    public Map<Integer, Socket> getSocketIndexer() {
+        return socketIndexer;
+    }
+
+    public void setSocketIndexer(Map<Integer, Socket> socketIndexer) {
+        this.socketIndexer = socketIndexer;
     }
 }

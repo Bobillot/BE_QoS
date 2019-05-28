@@ -1,11 +1,9 @@
-package com.company;
+package application;
 
 import dataStructs.ReservationData;
 import dataStructs.Site;
 import exceptions.EFCapacityReached;
-import utils.ipAddrConverter;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -18,21 +16,21 @@ public class Main {
     public static void main(String[] args) {
         //setup all sites
         Site site1 = new Site(ipStringToInteger("255.255.255.0"),
-                        ipStringToInteger("192.168.10.1"),
-                        "eth0",
-                        ipStringToInteger("202.205.205.1"),
-                        "eth1",
-                        4000,3000);
+                              ipStringToInteger("192.168.10.1"),
+                              "eth0",
+                              ipStringToInteger("202.205.205.1"),
+                              "eth1",
+                              4000, 3000);
         Site site2 = new Site(ipStringToInteger("255.255.255.0"),
                               ipStringToInteger("192.168.20.1"),
                               "eth0",
                               ipStringToInteger("206.206.206.1"),
                               "eth1",
-                              4000,3000);
-//        Site site1 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
-//                              ipAddrConverter.ipStringToInteger("192.168.10.1"), 3000, 5000);
-//        Site site2 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
-//                              ipAddrConverter.ipStringToInteger("192.168.20.1"), 3000, 5000);
+                              4000, 3000);
+        //        Site site1 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
+        //                              ipAddrConverter.ipStringToInteger("192.168.10.1"), 3000, 5000);
+        //        Site site2 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
+        //                              ipAddrConverter.ipStringToInteger("192.168.20.1"), 3000, 5000);
         BandwidthBroker BB = BandwidthBroker.getInstance();
 
         BB.addSite(site1, 1);
@@ -40,7 +38,6 @@ public class Main {
 
         //wait for requests from the phones and make reservation accordingly
         try {
-            //FIXME Modify with datagram socket ? Need info from softphone team
             ServerSocket socket = new ServerSocket(4000);
             Socket client = null;
 
@@ -59,6 +56,7 @@ public class Main {
                     //TODO send refuse
                 }
                 //TODO remove reservation if request for disconnect
+                BB.removeReservation(resData);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,18 +81,5 @@ public class Main {
             System.exit(1);
         }
         return resData;
-    }
-
-    /**
-     * Get reservation data from a request
-     * Need to define the class
-     * @param request
-     * @return
-     */
-    private static ReservationData getResDataFromRequest(Object request) {
-        /*TODO implement getting reservation data
-         * Needs information from sofpthone team
-        */
-        return null;
     }
 }
