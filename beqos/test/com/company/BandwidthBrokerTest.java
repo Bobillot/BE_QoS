@@ -10,8 +10,18 @@ class BandwidthBrokerTest {
 
     @BeforeEach
     void setUp() {
-        Site site1 = new Site(ipStringToInteger("255.255.255.0"), ipStringToInteger("192.168.10.1"), 3000, 5000);
-        Site site2 = new Site(ipStringToInteger("255.255.255.0"), ipStringToInteger("192.168.20.1"),3000,5000);
+        Site site1 = new Site(ipStringToInteger("255.255.255.0"),
+                              ipStringToInteger("192.168.10.1"),
+                              "eth0",
+                              ipStringToInteger("202.205.205.1"),
+                              "eth1",
+                              4000,3000);
+        Site site2 = new Site(ipStringToInteger("255.255.255.0"),
+                              ipStringToInteger("192.168.20.1"),
+                              "eth0",
+                              ipStringToInteger("206.206.206.1"),
+                              "eth1",
+                              4000,3000);
         BandwidthBroker BB = BandwidthBroker.getInstance();
 
         BB.addSite(site1,1);

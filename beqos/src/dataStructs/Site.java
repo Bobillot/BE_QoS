@@ -18,7 +18,7 @@ public class Site {
     private Integer edgeRouterIPoutisde;
     private String edgeRouterInterfaceOutside;
     private Integer netcatPort;
-    private Integer totalEFCapacity; //modifiy with SLA class if more information
+    private Integer totalEFCapacity;
     private  Integer usedEfCapacity;
 
     /**
@@ -38,6 +38,8 @@ public class Site {
         this.netcatPort = netcatPort;
         this.totalEFCapacity = totalEFCapacity;
         this.queueReservationList = new HashMap<>();
+        this.usedEfCapacity = 0;
+        this.tcqueueIndexCounter = 0;
     }
 
     public boolean isReservationPossible(Integer reqCapacity) {
@@ -68,6 +70,7 @@ public class Site {
 
         //increment queue counter
         tcqueueIndexCounter++;
+        queueReservationList.put(resData,tcqueueIndexCounter);
 
         //generate strings
         result.add(generateConfigStringTc(resData.getDataRateReq()));
@@ -176,13 +179,13 @@ public class Site {
     }
 
     private String generateConfigStringTc(Integer dataRateReq) {
-        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:1 classid 1:1"
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:1 classid 1:1"
                    + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
         return s;
     }
 
     private String generateConfigStringAssignTc() {
-        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + "parent 1:0 protocol ip prio 1 handle "
+        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:0 protocol ip prio 1 handle "
                    + this.getTcqueueIndexCounter() + " fw flowid 1:1" + this.getTcqueueIndexCounter();
         return s;
     }
