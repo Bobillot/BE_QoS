@@ -1,6 +1,13 @@
 package dataStructs;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static utils.networkUtils.*;
 
 public class Site {
     //site number as collection index
@@ -12,20 +19,19 @@ public class Site {
     Integer totalEFCapacity; //modifiy with SLA class if more information
     Integer usedEfCapacity;
 
-
     /**
-     * netmask associated with the site
-     * used to check if an ip is from a given site
+     * Map storing a reservation and the queue index associated  with it
      */
-
-
-    List<ReservationData> queueReservationList;
+    Map<ReservationData,Integer> queueReservationList;
+    Integer tcqueueIndexCounter;
 
     public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity) {
         this.netmask = netmask;
         this.edgeRouterIPinside = edgeRouterIP;
         this.totalEFCapacity = totalEFCapacity;
         this.usedEfCapacity = 0;
+        queueReservationList = new HashMap<>();
+        tcqueueIndexCounter = 0;
     }
 
     public boolean isReservationPossible(Integer reqCapacity){
@@ -35,10 +41,16 @@ public class Site {
 
     public void makeReservation(ReservationData resData){
         //TODO add capacity check
-
-        //TODO implement check if initiator or dest
+        
+        Boolean init = resData.getSrcIP() == findIpInNetwork(resData.getSrcIP(),resData.getDstIP(),this.getNetwork());
 
         //TODO implement
+        //get values for generating config strings
+        Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
+        Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
+
+        String
+
         System.out.println("made reservation for site " + getNetwork());
     }
 
