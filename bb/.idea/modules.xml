@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/beqos.iml" filepath="$PROJECT_DIR$/beqos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bb.iml" filepath="$PROJECT_DIR$/bb.iml" />
     </modules>
   </component>
 </project>
