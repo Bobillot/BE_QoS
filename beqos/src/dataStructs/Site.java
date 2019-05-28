@@ -6,9 +6,12 @@ public class Site {
     //site number as collection index
     Integer netmask;
     Integer edgeRouterIPinside;
+    String edgeRouterInterfaceInside;
     Integer edgeRouterIPoutisde;
+    String edgeRouterInterfaceOutside;
     Integer totalEFCapacity; //modifiy with SLA class if more information
     Integer usedEfCapacity;
+
 
     /**
      * netmask associated with the site
@@ -87,4 +90,10 @@ public class Site {
     public void setQueueReservationList(List<ReservationData> queueReservationList) {
         this.queueReservationList = queueReservationList;
     }
+
+    private String generateConfigStringTc(){}
+
+    private String generateConfigStringIpTables(Integer ipDest, Integer portDest){}
+
+    private String generateConfigStringDscp(Integer ipDest, Integer portDest){}
 }

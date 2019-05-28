@@ -79,4 +79,13 @@ public class BandwidthBroker {
     protected Integer getSiteIndexFromIP(Integer IP) {
         return networkIndexer.get(getSiteNetworkFromIP(IP));
     }
+
+    private void initialRouterConfiguration(Site mySite) //function to be called to initiate a new queue on a CE router
+    {
+        //TODO : Convertir les println en "commande Netcat"
+        println("tc qdisc del dev " + mySite.edgeRouterInterfaceOutside + " root");                                                 //repart de 0
+        println("tc qdisc add dev " + mySite.edgeRouterInterfaceOutside + " root handle 1: htb default 2");                         //création de la racine, les paquets non étiquetés iront dans 1:2
+        println("tc class add dev " + mySite.edgeRouterInterfaceOutside + " parent 1: classid 1:1 htb rate " + mySite.totalEFCapacity + "Mbit ceil "+ mySite.totalEFCapacity + "Mbit");      //création à la racine d'une branche 1:1 à totalEF Mbit
+        println("tc class add dev " + mySite.edgeRouterInterfaceOutside + " parent 1: classid 1:2 htb rate 10Mbit ceil 10Mbit");    //création à la racine d'une branche 1:2 à 10Mbit
+    }
 }
