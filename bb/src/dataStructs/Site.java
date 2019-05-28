@@ -205,14 +205,14 @@ public class Site {
 
     private String generateConfigStringIpTables(Integer ipDest,
                                                 Integer portDest) {
-        String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+        String s = "iptables -I POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + " -p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
         return s;
     }
 
     private String generateConfigStringDscp(Integer ipDest,
                                             Integer portDest) {
-        String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
+        String s = "iptables -I POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + " -p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
     }
