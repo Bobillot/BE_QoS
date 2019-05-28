@@ -106,6 +106,11 @@ public class BandwidthBroker {
     }
 
 
+    /**
+     * Returns the network of a website from an ip address in the site
+     * @param ip
+     * @return
+     */
     protected Integer getSiteNetworkFromIP(Integer ip) {
         Integer result = 0;
         Integer netmask;
@@ -117,6 +122,11 @@ public class BandwidthBroker {
         return result;
     }
 
+    /**
+     * Return the index of a site from a given IP address in the site
+     * @param IP
+     * @return
+     */
     protected Integer getSiteIndexFromIP(Integer IP) {
         return networkIndexer.get(getSiteNetworkFromIP(IP));
     }
@@ -133,7 +143,11 @@ public class BandwidthBroker {
 
     }
 
-    private void initialRouterConfiguration(Site mySite) //function to be called to initiate a new queue on a CE router
+    /**
+     * Initial configuration of TC queues on the router
+     * @param mySite
+     */
+    private void initialRouterConfiguration(Site mySite)
     {
         Integer siteIndex = networkIndexer.get(mySite.getNetwork());
         List<String> stringList = new ArrayList<>();
