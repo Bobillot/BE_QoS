@@ -99,6 +99,7 @@ public class Site {
         //TODO generate queue and iptables commands
 
         return result;
+
     }
 
     public Integer getNetwork() {
@@ -202,6 +203,19 @@ public class Site {
         String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + " -p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
+    }
 
+    private String removeConfigTc(ReservationData data)
+    private String removeConfigIpTables(Integer ipDest, Integer portDest)
+    {
+        String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
+        return s;
+    }
+    private String removeConfigDscp(Integer ipDest, Integer portDest)
+    {
+        String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
+        return s;
     }
 }
