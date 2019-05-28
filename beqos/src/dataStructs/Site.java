@@ -16,6 +16,7 @@ public class Site {
     String edgeRouterInterfaceInside;
     Integer edgeRouterIPoutisde;
     String edgeRouterInterfaceOutside;
+    Integer netcatPort;
     Integer totalEFCapacity; //modifiy with SLA class if more information
     Integer usedEfCapacity;
 
@@ -25,11 +26,12 @@ public class Site {
     Map<ReservationData,Integer> queueReservationList;
     Integer tcqueueIndexCounter;
 
-    public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity) {
+    public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity, Integer netcatPort) {
         this.netmask = netmask;
         this.edgeRouterIPinside = edgeRouterIP;
         this.totalEFCapacity = totalEFCapacity;
         this.usedEfCapacity = 0;
+        this.netcatPort = netcatPort;
         queueReservationList = new HashMap<>();
         tcqueueIndexCounter = 0;
     }
@@ -39,19 +41,39 @@ public class Site {
         return remainingCapacity >= reqCapacity;
     }
 
-    public void makeReservation(ReservationData resData){
+    /**
+     * Returns list of string for the BB to configure the router.
+     * Makes the necessary changes to the Site instance state.
+     * @param resData
+     * @return
+     */
+    public List<String> makeReservation(ReservationData resData){
+
+        ArrayList<String> result = new ArrayList<>();
+
         //TODO add capacity check
-        
-        Boolean init = resData.getSrcIP() == findIpInNetwork(resData.getSrcIP(),resData.getDstIP(),this.getNetwork());
+
+        usedEfCapacity += resData.getDataRateReq();
+        Boolean init = resData.getSrcIP().equals(
+                findIpInNetwork(resData.getSrcIP(), resData.getDstIP(), this.getNetwork()));
 
         //TODO implement
         //get values for generating config strings
         Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
         Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
 
-        String
+        //increment queue counter
+        tcqueueIndexCounter++;
+
+        //generate strings
+        result.add(generateConfigStringTc());
+        result.add(generateConfigStringIpTables(ipConfig,portConfig));
+        result.add(generateConfigStringDscp(ipConfig,portConfig));
+
 
         System.out.println("made reservation for site " + getNetwork());
+
+        return result;
     }
 
     public void removeReservation(ReservationData resData){
@@ -95,12 +117,20 @@ public class Site {
         this.usedEfCapacity = usedEfCapacity;
     }
 
-    public List<ReservationData> getQueueReservationList() {
+    public Map<ReservationData,Integer> getQueueReservationList() {
         return queueReservationList;
     }
 
-    public void setQueueReservationList(List<ReservationData> queueReservationList) {
+    public void setQueueReservationList(Map<ReservationData,Integer> queueReservationList) {
         this.queueReservationList = queueReservationList;
+    }
+
+    public Integer getNetcatPort() {
+        return netcatPort;
+    }
+
+    public void setNetcatPort(Integer netcatPort) {
+        this.netcatPort = netcatPort;
     }
 
     private String generateConfigStringTc(){}

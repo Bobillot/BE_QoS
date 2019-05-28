@@ -6,6 +6,10 @@ import exceptions.EFCapacityReached;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.net.*;
+import java.io.*;
+
+import static utils.ipAddrConverter.*;
 
 public class BandwidthBroker {
 
@@ -18,6 +22,11 @@ public class BandwidthBroker {
      * Stores the couples SiteIndex/Site
      */
     Map<Integer, Site> siteIndexer;
+
+    /**
+     * Stores couples SiteIndex/Socket
+     */
+    Map<Integer, Socket> socketIndexer;
 
 
     private static BandwidthBroker ourInstance = new BandwidthBroker();
@@ -61,6 +70,8 @@ public class BandwidthBroker {
     public void addSite(Site site, Integer siteIndex){
         networkIndexer.put(site.getNetwork(), siteIndex);
         siteIndexer.put(siteIndex,site);
+        Socket socket = new Socket(InetAddress.getByName(ipIntegerToString(site.getEdgeRouterIPoutside())),site.getNetcatPort());
+        socketIndexer.put(siteIndex,socket);
         System.out.println("Added site " + siteIndex + " with network " + utils.ipAddrConverter.ipIntegerToString(site.getNetwork()));
     }
 
@@ -78,6 +89,10 @@ public class BandwidthBroker {
 
     protected Integer getSiteIndexFromIP(Integer IP) {
         return networkIndexer.get(getSiteNetworkFromIP(IP));
+    }
+
+    protected void configureRouter(String command, Integer ip, Integer port){
+
     }
 
     private void initialRouterConfiguration(Site mySite) //function to be called to initiate a new queue on a CE router
