@@ -24,17 +24,20 @@ public class Site {
     /**
      * Map storing a reservation and the queue index associated  with it
      */
-    //private Map<ReservationData, Integer> queueReservationList;
+    private Map<ReservationData, Integer> queueReservationList;
     private Integer tcqueueIndexCounter;
 
-    public Site(Integer netmask, Integer edgeRouterIP, Integer totalEFCapacity, Integer netcatPort) {
+    public Site(Integer netmask, Integer edgeRouterIPinside, String edgeRouterInterfaceInside,
+                Integer edgeRouterIPoutisde, String edgeRouterInterfaceOutside, Integer netcatPort,
+                Integer totalEFCapacity) {
         this.netmask = netmask;
-        this.edgeRouterIPinside = edgeRouterIP;
-        this.totalEFCapacity = totalEFCapacity;
-        this.usedEfCapacity = 0;
+        this.edgeRouterIPinside = edgeRouterIPinside;
+        this.edgeRouterInterfaceInside = edgeRouterInterfaceInside;
+        this.edgeRouterIPoutisde = edgeRouterIPoutisde;
+        this.edgeRouterInterfaceOutside = edgeRouterInterfaceOutside;
         this.netcatPort = netcatPort;
-        //queueReservationList = new HashMap<>();
-        tcqueueIndexCounter = 0;
+        this.totalEFCapacity = totalEFCapacity;
+        this.queueReservationList = new HashMap<>();
     }
 
     public boolean isReservationPossible(Integer reqCapacity) {
@@ -187,14 +190,14 @@ public class Site {
     private String generateConfigStringIpTables(Integer ipDest,
                                                 Integer portDest) {
         String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
+                ipDest) + " -p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
         return s;
     }
 
     private String generateConfigStringDscp(Integer ipDest,
                                             Integer portDest) {
         String s = "iptables -A POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
+                ipDest) + " -p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
 
     }
