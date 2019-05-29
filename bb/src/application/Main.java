@@ -25,11 +25,11 @@ public class Main {
                               "eth1",
                               4444, 3000);
         Site site2 = new Site(ipStringToInteger("255.255.255.0"),
-                              ipStringToInteger("192.168.20.1"),
+                              ipStringToInteger("192.168.10.1"),
                               "eth0",
                               ipStringToInteger("206.206.206.1"),
                               "eth1",
-                              4444, 3000);
+                              4445, 3000);
         //        Site site1 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
         //                              ipAddrConverter.ipStringToInteger("192.168.10.1"), 3000, 5000);
         //        Site site2 = new Site(ipAddrConverter.ipStringToInteger("255.255.255.0"),
@@ -39,46 +39,62 @@ public class Main {
         BB.addSite(site1, 1);
         BB.addSite(site2, 2);
 
-        //wait for requests from the phones and make reservation accordingly
+
+        //TODO Testing, to remove
+        ReservationData reservationData = new ReservationData(5000,6000,
+                                                                                  ipStringToInteger("192.168.10.5"),
+                                                                                  ipStringToInteger("192.168.10.6"),
+                                                                                  64);
         try {
-            ServerSocket socket = new ServerSocket(4000);
-            Socket client = null;
-
-            // Accept client and create thread to handle com
-            while (true) {
-                client = socket.accept();
-                ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-                QoSRequest qoSRequest = readFromStream(ois);
-                ReservationData resData = new ReservationData(qoSRequest);
-
-                //check if co or deco request
-                if (qoSRequest.statusConnexion) {
-                    ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-                    QoSResponse resp;
-                    try {
-
-                        BB.makeReservation(resData);
-                        resp = new QoSResponse(true);
-
-
-                    } catch (EFCapacityReached efCapacityReached) {
-                        resp = new QoSResponse(false);
-                    }
-
-                    //write response and close stream
-                    oos.writeObject(resp);
-                    oos.flush();
-                    oos.close();
-
-                }
-                else {
-                    BB.removeReservation(resData);
-                }
-                client.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            BB.makeReservation(reservationData);
+            System.out.println("Statut sites :\n"+site1 + "\n" + site2);
+            BB.removeReservation(reservationData);
+            System.out.println("Statut sites :\n"+site1 + "\n" + site2);
+        } catch (EFCapacityReached efCapacityReached) {
+            efCapacityReached.printStackTrace();
         }
+
+
+        //wait for requests from the phones and make reservation accordingly
+//        try {
+//            ServerSocket socket = new ServerSocket(4000);
+//            Socket client = null;
+//
+//            // Accept client and create thread to handle com
+//            while (true) {
+//                client = socket.accept();
+//                ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+//                QoSRequest qoSRequest = readFromStream(ois);
+//                ReservationData resData = new ReservationData(qoSRequest);
+//
+//                //check if co or deco request
+//                if (qoSRequest.statusConnexion) {
+//                    ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
+//                    QoSResponse resp;
+//                    try {
+//
+//                        BB.makeReservation(resData);
+//                        resp = new QoSResponse(true);
+//
+//
+//                    } catch (EFCapacityReached efCapacityReached) {
+//                        resp = new QoSResponse(false);
+//                    }
+//
+//                    //write response and close stream
+//                    oos.writeObject(resp);
+//                    oos.flush();
+//                    oos.close();
+//
+//                }
+//                else {
+//                    BB.removeReservation(resData);
+//                }
+//                client.close();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
         System.out.println("Done");

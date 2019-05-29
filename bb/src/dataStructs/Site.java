@@ -98,14 +98,14 @@ public class Site {
         Integer ipConfig = init ? resData.getDstIP() : resData.getSrcIP();
         Integer portConfig = init ? resData.getDstPort() : resData.getSrcPort();
 
-        //remove from list
-        queueReservationList.remove(resData);
-
         //generate commands
         result.add(removeConfigAssignTc(resData));
         result.add(removeConfigTc(resData));
         result.add(removeConfigIpTables(ipConfig,portConfig));
         result.add(removeConfigDscp(ipConfig,portConfig));
+
+        //remove from list
+        queueReservationList.remove(resData);
 
         return result;
 
@@ -242,5 +242,15 @@ public class Site {
         String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
                 ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
+    }
+
+    @Override
+    public String toString() {
+        return "Site{" + ipIntegerToString(getNetwork()) +
+               ", totalEFCapacity=" + totalEFCapacity +
+               ", usedEfCapacity=" + usedEfCapacity +
+               ", queueReservationList=" + queueReservationList +
+               ", tcqueueIndexCounter=" + tcqueueIndexCounter +
+               '}';
     }
 }
