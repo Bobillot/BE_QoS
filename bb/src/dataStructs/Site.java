@@ -224,7 +224,7 @@ public class Site {
                 + this.queueReservationList.get(data);
         return s;
     }
-
+    // !! tc filter dev must be called before tc class dev !! 
     private String removeConfigAssignTc(ReservationData data)
     {
         String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:0 protocol ip prio 1 handle "
