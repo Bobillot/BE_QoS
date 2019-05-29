@@ -41,6 +41,7 @@ public class Site {
         this.queueReservationList = new HashMap<>();
         this.usedEfCapacity = 0;
         this.tcqueueIndexCounter = 0;
+        System.out.println("Site created : " + getNetwork());
     }
 
     public boolean isReservationPossible(Integer reqCapacity) {
