@@ -98,7 +98,7 @@ public class BandwidthBroker {
         siteIndexer.put(siteIndex, site);
         Socket socket = null;
         try {
-            socket = new Socket(InetAddress.getByName(ipIntegerToString(site.getEdgeRouterIPoutisde())),
+            socket = new Socket(InetAddress.getByName(ipIntegerToString(site.getEdgeRouterIPinside())),
                                 site.getNetcatPort());
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,7 +139,8 @@ public class BandwidthBroker {
         Socket socket = socketIndexer.get(siteIndex);
         try {
             OutputStream os = socket.getOutputStream();
-            os.write(command.getBytes());
+            String s = command + "\r\n";
+            os.write(s.getBytes());
             os.flush();
         } catch (IOException e) {
             e.printStackTrace();
