@@ -1,5 +1,7 @@
 package dataStructs;
 
+import openjsip.proxy.QoSRequest;
+
 import java.io.Serializable;
 import java.util.Objects;
 import static utils.ipAddrConverter.*;
