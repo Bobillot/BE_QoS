@@ -179,7 +179,7 @@ public class BandwidthBroker {
 
         stringList.add("iptables -A POSTROUTING -t mangle -p udp -j MARK --set-mark 20");
 
-        stringList.add("iptables -A POSTROUTING -t mangle -p udp j DSCP --set-dscp-class BE");
+        stringList.add("iptables -A POSTROUTING -t mangle -p udp -j DSCP --set-dscp-class BE");
 
         //send commands to router
         for (String s : stringList) {
