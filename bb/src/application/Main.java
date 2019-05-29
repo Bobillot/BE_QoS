@@ -23,19 +23,19 @@ public class Main {
                               "eth1",
                               ipStringToInteger("193.168.1.1"),
                               "eth0",
-                              4444, 3000);
+                              4444, 2000);
         Site site2 = new Site(ipStringToInteger("255.255.255.0"),
                               ipStringToInteger("192.168.2.1"),
                               "eth2",
                               ipStringToInteger("193.168.2.1"),
                               "eth0",
-                              4444, 3000);
+                              4444, 2000);
         Site site3 = new Site(ipStringToInteger("255.255.255.0"),
                               ipStringToInteger("192.168.3.1"),
                               "eth2",
                               ipStringToInteger("193.168.3.1"),
                               "eth0",
-                              4444, 3000);
+                              4444, 2000);
         BandwidthBroker BB = BandwidthBroker.getInstance();
 
         BB.addSite(site1, 1);
