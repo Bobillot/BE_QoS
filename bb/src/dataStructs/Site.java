@@ -233,14 +233,14 @@ public class Site {
     }
     private String removeConfigIpTables(Integer ipDest, Integer portDest)
     {
-        String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
+        String s = "iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + " -p udp --dport " + portDest + " -j MARK --set-mark " + this.getTcqueueIndexCounter();
         return s;
     }
     private String removeConfigDscp(Integer ipDest, Integer portDest)
     {
-        String s = "sudo iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
-                ipDest) + "-p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
+        String s = "iptables -D POSTROUTING -t mangle -d " + ipIntegerToString(
+                ipDest) + " -p udp --dport " + portDest + " -j DSCP --set-dscp-class EF";
         return s;
     }
 }
