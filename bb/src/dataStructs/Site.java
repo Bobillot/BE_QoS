@@ -220,14 +220,14 @@ public class Site {
 
     private String removeConfigTc(ReservationData data)
     {
-        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:1 classid 1:1"
-                + this.queueReservationList.get(data) + " htb rate " + data.dataRateReq + "kbit ceil " + data.dataRateReq + "kbit";
+        String s = "tc class del dev " + this.getEdgeRouterInterfaceOutside() + " classid 1:1"
+                + this.queueReservationList.get(data);
         return s;
     }
 
     private String removeConfigAssignTc(ReservationData data)
     {
-        String s = "tc filter add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:0 protocol ip prio 1 handle "
+        String s = "tc filter del dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:0 protocol ip prio 1 handle "
                 + this.queueReservationList.get(data) + " fw flowid 1:1" + this.queueReservationList.get(data);
         return s;
     }
