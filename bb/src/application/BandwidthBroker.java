@@ -140,8 +140,12 @@ public class BandwidthBroker {
         try {
             OutputStream os = socket.getOutputStream();
             String s = command + "\r\n";
-            os.write(s.getBytes());
-            os.flush();
+            System.out.println(command);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+            bw.write(command);
+            bw.flush();
+            bw.newLine();
+            bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
