@@ -1,0 +1,121 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{xcolor}
+\usepackage{relsize}
+\usepackage{minted}
+\usepackage[margin=2.25cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english, french]{babel} %last = main language
+\usepackage{csquotes}
+\usepackage[labelfont=bf, textfont=bf]{caption}
+\usepackage[section]{placeins} %force figure in section
+\usepackage{tabularx}
+
+
+%force floats in section
+\let\Oldsection\section
+\renewcommand{\section}{\FloatBarrier\Oldsection}
+
+\let\Oldsubsection\subsection
+\renewcommand{\subsection}{\FloatBarrier\Oldsubsection}
+
+\let\Oldsubsubsection\subsubsection
+\renewcommand{\subsubsection}{\FloatBarrier\Oldsubsubsection}
+
+%centered wrapping column
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\title{BE Qualité de service dans l'internet \\[0.1em]\textsmaller[]{4IR SC - INSA Toulouse - DGEI}}
+\author{
+    Thomas Bobillot\\
+    \texttt{bobillot@etud.insa-toulouse.fr}
+ \and
+  Philippe Hérail\\
+  \texttt{herail@etud.insa-toulouse.fr}
+ \and
+  Léo Picou\\
+\texttt{picou@etud.insa-toulouse.fr}
+ \and
+  Eva Soussi \\
+  \texttt{soussi@etud.insa-toulouse.fr}
+  }
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\cleardoublepage
+
+\section{Introduction}
+
+Dans le cadre de l’UF "Interconnexion avancée de Réseaux", nous avons eu l’opportunité de réaliser ce bureau d’étude lié à la qualité de service. Il s’agissait de réaliser la mise en place, sur une journée, d’une solution de gestion statique de la QoS dans un réseau de coeur ainsi que d’une solution dynamique de la QoS sur un réseau client. Des séances de TP et de travail personnel nous ont permis de préparer ce travail en amont de la journée du 29 mai.
+
+Ce rapport a pour but de présenter l’ensemble des choix réalisés pendant la préparation et pendant la journée de réalisation. Il présentera tant la stratégie d'implémentation que sa réalisation.
+
+\section{Bandwidth Broker}
+Le Bandwidth broker a été écrit en Java. Ce langage a été choisi pour la facilté de déploiement de logiciel en salle de TP, mais également suite au travail effectué dans ce langage au premier semestre. Ceci a permis de réutiliser les connaissances acquises, principalement au niveau de la communication en réseau.
+
+Le Bandwidth Broker (BB) est articulé autour des classes présentées ci-après et détaillées dans les section suivantes.
+
+\begin{description}
+    \item[\texttt{Main}] point d'entrée de l'application, ainqi qu'une fonction d'écoute et de communication avec le proxy SIP.
+    \item[\texttt{BandwidthBroker}] présente les fonctions attendues du BB : enregistrement de nouveaux sites, que l'ajout et le retrait de réservations de bande passante et l'envoi des commandes de configuration du routeur.
+    \item[\texttt{Site}] implémente, site par site, la réservation de bande passante, et le stockage des informations liées à un site, telles que le netmask, les adresses des interfaces du routeur de bordure, et les informations du SLA, et la génération des commandes de configuration des routeurs de bordure.
+    \item[\texttt{ReservationData}] contient les informations nécessaires à la réservation, à savoir le couple source\slash destination et la bande passante nécessaire. Permet d'abstraire les échanges SIP au niveau du reste de l'application.
+\end{description}
+
+
+\subsection{Class \texttt{Main}}
+
+Cette classe permet de configurer les différents site, via l'appel à une fonction du BB (voir Listing \ref{lst:confsite}). Afin de se concentrer sur l'implémentation des fonctions spécifiques au BE, les différents sites sont configurés dans le code même.
+
+\begin{listing}[htp]
+    \begin{minted}[frame=single,framesep=10pt]{java}
+Site site1 = new Site(netmask,
+                    ipStringToInteger("192.168.1.1"), //IP interne routeur
+                    "eth1", //interface interne routeur
+                    ipStringToInteger("193.168.1.1"), //IP externe routeur
+                    "eth0", //interface externe routeur
+                    4444, //port d'écoute netcat
+                    2000); //capacité EF, en kbits
+BB.addSite(site1, 1);
+  \end{minted}
+    \caption{Configuration d'un site}
+    \label{lst:confsite}
+\end{listing}
+
+La fonnction de communication avec le proxy SIP est également implémentée directement dans la fonction main, en raison de la simplicité de celle-ci. En effet, nous avons choisi de travailler avec une application monothreadée,  afin de simplifier son développement, ce qui a été suffisant de le cadre du projet, en raison du peu de requêtes reçues de la part du proxy SIP.
+
+\subsection{Class \texttt{BandwidthBroker}}
+
+Cette classe permet d'effectuer la réservation de bande passante
+
+La classe contient 3 structures de données (Figure \ref{lst:stockagesite}). Les deux premières structures permettent d'accèder à un site à la fois par son index, et par l'adresse de réseau interne. Les index permettent de simplifier la configuration de sites  à l'aide boucles \texttt{foreach}, mais également d'établir une correspondance évidente avec les numéros de site du BE.
+L'accès par réseau permet d'identifier un site depuis les informations obtenues grâce aux requêtes du proxy SIP.
+La dernière structure, \texttt{socketIndexer}, permet 
+
+
+\begin{listing}[htp]
+    \begin{minted}[frame=single,framesep=10pt]{java}
+// Stores the associations network/SiteIndex
+Map<Integer, Integer> networkIndexer;
+
+// Stores the couples SiteIndex/Site
+Map<Integer, Site> siteIndexer;
+
+// Stores couples SiteIndex/Socket
+Map<Integer, Socket> socketIndexer;
+      \end{minted}
+    \caption{Stockage des différents sites}
+    \label{lst:stockagesite}
+\end{listing}
+
+
+
+\subsection{Class \texttt{Site}}
+
+\subsection{Class \texttt{ReservationData}}
+
+\end{document}
