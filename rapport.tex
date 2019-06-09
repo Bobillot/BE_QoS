@@ -292,12 +292,14 @@ Cette objet contient actuellement 3 informations :
 
 
 
-Pour obtenir les adresses IP, nous nous basons sur 2 champs du Header, \emph{From}  et \emph{To}. Pour connaître le débit nécessaire, nous nous basons sur le codec choisi dans le champ \emph{Media} du Header de la payload SDP. Une fois ces informations réunies, l’objet QoSRequest est envoyé au BB via \texttt{RequestToBB(...)}. Cette méthode retourne un objet \texttt{QoSResponse} contenant la réponse du BB. Cette réponse est modélisée sous forme d’un booléen :
-
-\begin{itemize}
-    \item True pour "Ressources disponibles, réservation effectuée !"
-    \item False pour "Ressources indisponibles, réservation non-effectuée !"
-\end{itemize}
+Pour obtenir les adresses IP, nous nous basons sur 2 champs du Header, \emph{From}  et \emph{To}. Pour connaître le débit nécessaire, nous nous basons sur le codec choisi dans le champ \emph{Media} du Header de la payload SDP. Une fois ces informations réunies, l’objet QoSRequest est envoyé au BB via \texttt{RequestToBB(...)}. Cette méthode retourne un objet \texttt{QoSResponse} contenant la réponse du BB. 
+\begin{samepage}
+    Cette réponse est modélisée sous forme d’un booléen :
+    \begin{description}
+        \item[True] pour "Ressources disponibles, réservation effectuée !"
+        \item[False] pour "Ressources indisponibles, réservation non-effectuée !"
+    \end{description}
+\end{samepage}
 
 
 En fonction de la valeur de ce booléen, on forward ou non le paquet SIP 200 OK \& INVITE à Alice.
