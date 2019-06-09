@@ -194,7 +194,7 @@ public class Site {
 
     private String generateConfigStringTc(Integer dataRateReq) {
         String s = "tc class add dev " + this.getEdgeRouterInterfaceOutside() + " parent 1:1 classid 1:1"
-                   + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq + "kbit ceil " + dataRateReq + "kbit";
+                   + this.getTcqueueIndexCounter() + " htb rate " + dataRateReq/1000 + "kbit ceil " + dataRateReq/1000 + "kbit";
         return s;
     }
 
