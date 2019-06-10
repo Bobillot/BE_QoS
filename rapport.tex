@@ -56,7 +56,7 @@
 
 \section{Introduction}
 
-Dans le cadre de l’UF "Interconnexion avancée de Réseaux", nous avons eu l’opportunité de réaliser ce bureau d’étude lié à la qualité de service. Il s’agissait de réaliser la mise en place, sur une journée, d’une solution de gestion statique de la QoS dans un réseau de coeur ainsi que d’une solution dynamique de la QoS sur un réseau client. Des séances de TP et de travail personnel nous ont permis de préparer ce travail en amont de la journée du 29 mai.
+Dans le cadre de l’UF "Interconnexion avancée de Réseaux", nous avons eu l’opportunité de réaliser ce bureau d’étude lié à la qualité de service. Il s’agissait de réaliser la mise en place, sur une journée, d’une solution de gestion statique de la QoS dans un réseau de cœur ainsi que d’une solution dynamique de la QoS sur un réseau client. Des séances de TP et de travail personnel nous ont permis de préparer ce travail en amont de la journée du 29 mai.
 
 Ce rapport a pour but de présenter l’ensemble des choix réalisés pendant la préparation et pendant la journée de réalisation. Il présentera tant la stratégie d'implémentation que sa réalisation.
 
@@ -69,11 +69,11 @@ Ce rapport a pour but de présenter l’ensemble des choix réalisés pendant la
     \label{fig:archrzo}
 \end{figure}
 
-L’architecture à mettre en place est celle présentée en Figure \ref{fig:archrzo}. Trois réseaux d’un même client sont interconnectés grâce au réseau de coeur. 
-Pour jouer le rôle des routeurs de bordure du réseau de coeur (Provider Edge, PE), nous avons utilisé des routeurs Cisco. 
+L’architecture à mettre en place est celle présentée en Figure \ref{fig:archrzo}. Trois réseaux d’un même client sont interconnectés grâce au réseau de cœur. 
+Pour jouer le rôle des routeurs de bordure du réseau de cœur (Provider Edge, PE), nous avons utilisé des routeurs Cisco. 
 Les routeurs de bordures de réseaux clients (Customer Edge, CE) ont quant à eux été mis en place à l'aide de routeurs Linux. Deux sites étaient supposés héberger des softphones, tandis le troisième devait héberger le Bandwith Broker ainsi que le Proxy SIP. Les softphones n’ont pas fonctionné pour la journée QoS, et nous avons donc utilisé des téléphones Cisco à la place. 
 
-\section{Réseau de coeur}
+\section{Réseau de cœur}
 
 Nous avons mis en place un domaine IP/MPLS DiffServ. 
 La première phase du déploiement a été de mettre en place le domaine IP/MPLS. Pour cela, nous avons suivi les étapes suivantes :
@@ -82,14 +82,14 @@ La première phase du déploiement a été de mettre en place le domaine IP/MPLS
     \item Activation du protocole LDP.
     \item Activation de MPLS sur les interfaces réseau appartenant au domaine MPLS.
     \item Mise en place de l'architecture VPN-IP, via la configuration des VRF et leur association aux sites. Les VPN assurent l’isolation du trafic entre les sites clients, qui possèdent dans notre cas des adresses privées.
-    \item Etablissement des sessions MP-BGP entre les PE, capable d'échanger des inforamtions de routage VPNv4.
+    \item Établissement des sessions MP-BGP entre les PE, capable d'échanger des informations de routage VPNv4.
 \end{itemize}
 
 Nous avions donc un réseau sécurisé via un VPN de niveau 3, car nous étions plus à l'aise avec la mise en place de type de VPN, tout en satisfaisant les contraintes imposées par le sujet du BE. 
 
-Afin de pouvoir mettre en place de la qualité de service dans notre réseau, nous avons dans un second temps mis en place un domaine DiffServ sur ce réseau de coeur. 
+Afin de pouvoir mettre en place de la qualité de service dans notre réseau, nous avons dans un second temps mis en place un domaine DiffServ sur ce réseau de cœur. 
 
-Nous avons établi un SLA pour chaque client, donc pour chaque connection entre CE et PE. Celui-ci est identique pour chacun des sites, mais rien dans notre travail n'interdirait de créer des SLA différents. D’après ce SLA, on veut garantir 25\% de la capacité des liens série interconnectant nos routeurs du réseau de coeur pour la voix, soit 2 Mbit/s. 
+Nous avons établi un SLA pour chaque client, donc pour chaque connexion entre CE et PE. Celui-ci est identique pour chacun des sites, mais rien dans notre travail n'interdirait de créer des SLA différents. D’après ce SLA, on veut garantir 25\% de la capacité des liens série interconnectant nos routeurs du réseau de cœur pour la voix, soit 2 Mbit/s. 
 La politique de policing suit le SLA et garantit que les clients ne dépassent pas le volume de trafic qui leur a été accordé. Dans le cadre du SLA on assure une garantie sur deux types de trafic : BE (best effort) et TR (temps réel, voix). 
 
 Au niveau du PE nous avons donc décidé de mettre en place deux classes DiffServ. Néanmoins, ce choix est discutable, car nous aurions pu définir plus de classes sans que cela impacte le système, tant que nous respections globalement la capacité de nos liens. Nous aurions par exemple pu définir une troisième classe de trafic, pour prioriser les flux à l’intérieur du nuage MPLS concernant les protocoles de routage (par exemple pour les flux ospf, ldp, etc...) qui sont encore plus fortement prioritaire. Pour des questions de simplicité de mise en place, nous ne l’avons pas fait dans le cadre de cet exercice.
@@ -107,9 +107,9 @@ Au sein du nuage MPLS, le domaine DiffServ est mis en place en suivant les deux 
 
 \section{Bandwidth Broker}
 \label{sec:BB}
-Le Bandwidth broker a été écrit en Java. Ce langage a été choisi pour la facilté de déploiement de logiciel en salle de TP, mais également suite au travail effectué dans ce langage au premier semestre. Ceci a permis de réutiliser les connaissances acquises, principalement au niveau de la communication en réseau.
+Le Bandwidth broker a été écrit en Java. Ce langage a été choisi pour la facilité de déploiement de logiciel en salle de TP, mais également suite au travail effectué dans ce langage au premier semestre. Ceci a permis de réutiliser les connaissances acquises, principalement au niveau de la communication en réseau.
 
-Le Bandwidth Broker (BB) est articulé autour des classes présentées ci-après et détaillées dans les section suivantes.
+Le Bandwidth Broker (BB) est articulé autour des classes présentées ci-après et détaillées dans les sections suivantes.
 
 \begin{description}
     \item[\texttt{Main}] point d'entrée de l'application, ainqi qu'une fonction d'écoute et de communication avec le proxy SIP.
@@ -118,7 +118,7 @@ Le Bandwidth Broker (BB) est articulé autour des classes présentées ci-après
     \item[\texttt{ReservationData}] contient les informations nécessaires à la réservation, à savoir le couple source\slash destination et la bande passante nécessaire. Permet d'abstraire les échanges SIP au niveau du reste de l'application.
 \end{description}
 
-Cette application communique avec le proxy SIP via un socket TCP, via l'envoi de classes sérialisées, et le BB communique avec les différents routeurs de bordure grâce à un socket TCP qui envoie les commandes de manières textuelles, via un simple socket, à une instance de \texttt{netcat} executant toutes les commandes reçues. 
+Cette application communique avec le proxy SIP via un socket TCP, via l'envoi de classes sérialisées, et le BB communique avec les différents routeurs de bordure grâce à un socket TCP qui envoie les commandes sous forme de chaînes de caractères, via un simple socket TCP, à une instance de \texttt{netcat} exécutant toutes les commandes reçues. 
 Les classes sérialisées nous permettent d'échanger facilement des informations arbitraires entre le proxy et le BB, via le simple partage du code de deux classes \texttt{QoSRequest} et \texttt{QoSResponse}, ce qui permet d'éviter l'utilisation de bibliothèques externes, pouvant poser des difficultés de déploiement.
 L'instance \texttt{netcat}, utilisée avec l'option \texttt{-e /bin/bash} et les droits root permet de simplifier la mise en place de la communication entre le BB et les routeurs CE, à comparer de la solution que nous avions envisagée reposant sur l'établissement d'une session SSH, nécessitant alors la mise en place de clés de chiffrement.
 
@@ -148,11 +148,11 @@ La fonction de communication avec le proxy SIP est également implémentée dire
 
 \subsection{Class \texttt{BandwidthBroker}}
 
-La classe contient 3 structures de données (Listing \ref{lst:stockagesite}). Les deux premières structures permettent d'accèder à un site à la fois par son index, et par l'adresse de réseau interne. Les index permettent de simplifier la configuration de sites  à l'aide boucles \texttt{foreach}, mais également d'établir une correspondance évidente avec les numéros de site du BE.
+La classe contient 3 structures de données (Listing \ref{lst:stockagesite}). Les deux premières structures permettent d'accéder à un site à la fois par son index, et par l'adresse de réseau interne. Les index permettent de simplifier la configuration de sites  à l'aide boucles \texttt{foreach}, mais également d'établir une correspondance évidente avec les numéros de site du BE.
 L'accès par réseau permet d'identifier un site depuis les informations obtenues grâce aux requêtes du proxy SIP.
 
 La dernière structure, \texttt{socketIndexer}, est principalement liée à l'utilisation de \texttt{netcat}. En effet, puisque la session est fermée lors de la déconnexion, il est nécessaire de conserver celle-ci ouverte, et donc de conserver ouvert le socket. 
-Nous avons fait le choix de créer la connection lors de l'ajout du site au BB, et non lors de la création de l'objet \texttt{Site}. \texttt{SocketIndexer} nous permet ainsi de garder une référence vers le socket pour l'ensemble de la durée de de vie de l'instance du \texttt{BandwidthBroker}, et d'y accèder via l'index du site afin d'envoyer les commandes de configuration nécessaires.
+Nous avons fait le choix de créer la connexion lors de l'ajout du site au BB, et non lors de la création de l'objet \texttt{Site}. \texttt{SocketIndexer} nous permet ainsi de garder une référence vers le socket pour l'ensemble de la durée de de vie de l'instance du \texttt{BandwidthBroker}, et d'y accéder via l'index du site afin d'envoyer les commandes de configuration nécessaires.
 
 
 \begin{listing}[htp]
@@ -176,7 +176,7 @@ Lors de l'ajout d'un site au BB, celui-ci va directement envoyer une série de c
 \subsection{Class \texttt{Site}}
 
 Cette classe permet de stocker les différentes informations sur l'état d'un site, détailllées dans le Listing \ref{lst:infosite}.
-Il implémente également les méthodes permettant de connaitre la possibilité d'effectuer une réservation, mais également de l'effectuer le cas échéant, et de la  supprimer sur demande du BB.
+Il implémente également les méthodes permettant de connaître la possibilité d'effectuer une réservation, mais également de l'effectuer le cas échéant, et de la  supprimer sur demande du BB.
 L'attribut \texttt{queueReservationList} permet de retrouver l'index de la file à détruire lors d'une requête de dé-réservation du proxy SIP.
 
 \begin{listing}[htp]
@@ -232,13 +232,13 @@ Cependant, il est important de noter que cette classe remplace les méthodes \te
 \end{figure}
 
 La Figure \ref{fig:htb-files} représente les files Hierarchical Token Bucket (HTB) qui ont été mises en place pour assurer le \emph{traffic shaping} des CE. 
-A l’initialisation du CE par le BB sont mises en places les files 1:0 (file racine), 1:1 (traffic temps réel) et 1:2 (file par défaut)). La file 1:2 vise à recevoir tout le trafic de type Best Effort. En parallèle, on a renseigné une règle \texttt{iptables} orientant tout le trafic dans la file 1:2 en l'absence d'autres règles.
+A l’initialisation du CE par le BB sont mises en places les files 1:0 (file racine), 1:1 (trafic temps réel) et 1:2 (file par défaut)). La file 1:2 vise à recevoir tout le trafic de type Best Effort. En parallèle, on a renseigné une règle \texttt{iptables} orientant tout le trafic dans la file 1:2 en l'absence d'autres règles.
 
 A chaque nouvelle demande de réservation, on crée une nouvelle file fille de 1:1 avec un débit max et garanti de “dataRateReq” kbit/s. Ce paramètre est un attribut de la classe \texttt{ReservationData} du BB et est présent pour permettre une allocation de bande passante différente selon le codec utilisé pour la communication. On ajoute aussi à chaque nouvelle demande de réservation une règle \texttt{iptables} en tête de la table pour associer le trafic, destiné à l’adresse IP destinataire et au port spécifique à la communication, à la file fraîchement créée. 
 
 Quand une communication est terminée, on retire l’ensemble des règles associées à cette communication (les filtres \texttt{tc} ainsi que les règles de \texttt{iptables}) et on finit par supprimer la file HTB.
 
-La creation et la destruction des files est des règles associées sont automatisées par le BB, dont le fonctionnement a été détaillé en Section \ref{sec:BB}.
+La création et la destruction des files est des règles associées sont automatisées par le BB, dont le fonctionnement a été détaillé en Section \ref{sec:BB}.
 
 \section{Proxy SIP}
 
