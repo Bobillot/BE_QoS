@@ -1,19 +1,8 @@
-Bonjour les experts en QoSmultilabelswitchingmultilayervpnpolyintersessionMPBGPOSPFRIP.
+# Structure du dépôt
 
-
-
-
-* Bandwitdth Broker (BB) -> Routeur  
-  Server Netcat sur le routeur en écoute constante avec l'argument -e pour permettre l'execution de commandes de shaping ( Fonctionnel, c'était chaud )  
-  Client Netcat sur le BB.
-
-
-* Proxy SIP -> BB  
-  Server java à implémenter sur le BB pour réceptionner les reqûetes SIP.  
-  Modifier le code du Proxy SIP pour envoyer des structures de données (INVITE,RINGING, etc...) qu'on aura déterminée.
-
-* Softphone <-> Proxy SIP     
-  Rien à faire pour cette connexion.
-
-
-
++ `./bb` 
+  + Contient le projet Intellij IDEA du Bandwidth Broker.
++ `./proxy`
+  + Contient le code du proxy SIP. Cependant, les dernières modifications du code ayant été faite sur une machine de la salle 101, celui-ci n'est pas à jour.
++ `rapport.pdf` & `./images`
+  + Rapport du groupe et dossier contenant les images utilisées dans le fichier `.tex`
